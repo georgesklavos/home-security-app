@@ -1,0 +1,7 @@
+{
+  "name": "security-system",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}

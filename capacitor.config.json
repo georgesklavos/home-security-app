@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "security-system",
+	"webDir": "dist",
+	"bundledWebRuntime": false
+}
