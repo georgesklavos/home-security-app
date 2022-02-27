@@ -1,45 +1,88 @@
 <template>
+<ion-page>
   <ion-content>
-    <IonCard class="ion-text-center">
+    <ion-card class="ion-text-center">
       <ion-card-header style="text-align: center">
         <ion-card-title>Login</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
+        <ion-item :class="{ error: v$.email.$errors.length }">
           <ion-label position="floating">Email</ion-label>
-          <ion-input></ion-input>
+          <ion-input inputmode="email" v-model="v$.email.$model"></ion-input>
+          <!-- <div
+            class="input-errors"
+            v-for="error of v$.email.$errors"
+            :key="error.$uid"
+          >
+            <small class="error-msg">{{ error.$message }}</small>
+          </div> -->
         </ion-item>
 
         <ion-item>
           <ion-label position="floating">Password</ion-label>
           <ion-input type="password"></ion-input>
         </ion-item>
-        <ion-button style="margin-top:5%" expand="block" @click="login">Login</ion-button>
+          <!-- <small v-if="(v$.password.$invalid && submitted) || v$.password.$pending.$response" class="p-error">{{v$.password.required.$message.replace('Value', 'Password')}}</small> -->
+        <ion-button style="margin-top: 5%" expand="block" @click="login"
+          >Login</ion-button
+        >
       </ion-card-content>
-    </IonCard>
+    </ion-card>
   </ion-content>
+</ion-page>
 </template>
 
 <script>
-import { IonCard, IonInput, IonLabel, IonItem } from "@ionic/vue";
+import { IonCard, IonInput, IonLabel, IonItem, IonButton, IonPage, IonCardContent, IonCardHeader,IonCardTitle,IonContent,  useIonRouter } from "@ionic/vue";
 import { defineComponent } from "vue";
+import useValidate from "@vuelidate/core";
+import { required, email } from "@vuelidate/validators";
+import {mapGetters} from "vuex";
+// import { useRouter } from "vue-router";
+
 
 export default defineComponent({
   name: "HomePage",
+  setup() {
+    const router = useIonRouter();
+    return { v$: useValidate(),router };
+  },
   components: {
     IonCard,
     IonInput,
     IonLabel,
     IonItem,
+    IonButton,
+    IonPage,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle,
+    IonContent
   },
   data() {
     return {
-      email: String,
-      password: String
-    }
+      email: "",
+      password: "",
+      submitted: false
+    };
+  },
+  validations() {
+    return {
+      email: { required, email },
+      password: { required },
+    };
+  },
+  computed: {
+    ...mapGetters(["count"])
   },
   methods: {
-    login() {
+    async login() {
+      console.log(this.count);
+      // const isFormCorrect = await this.v$.$validate();
+      this.submitted = true;
+      this.router.navigate("/alarms","forward","replace");
+      // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
+      // if (!isFormCorrect) return
       console.log("click login");
     },
   },
