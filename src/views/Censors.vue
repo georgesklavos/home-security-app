@@ -20,15 +20,13 @@
       <ion-list v-else>
         <ion-item-sliding v-for="(alarm, index) in alarms" :key="index">
           <ion-item>
-            <!-- <ion-label>{{ alarm.name }}</ion-label> -->
-            <ion-button @click="showCensors(alarm)" style="width: 100%; height: 100%" expand="full" fill="clear" class="full-width">{{alarm.name}}</ion-button>
+            <ion-label>{{ alarm.name }}</ion-label>
           </ion-item>
           <ion-item-options side="end">
-            <ion-item-option v-if="alarm.enabled" color="danger" @click="disableAlarm(alarm)"
+            <ion-item-option v-if="alarm.enabled" color="danger" @click="showCensors(alarm)"
               >Disable</ion-item-option>
-              <ion-item-option v-else color="success" @click="enableAlarm(alarm)"
+              <ion-item-option v-else color="success" @click="showCensors(alarm)"
               >Enable</ion-item-option>
-              <!-- ADD ALERT  -->
           </ion-item-options>
         </ion-item-sliding>
       </ion-list>
@@ -47,8 +45,7 @@ import {
   IonItemOptions,
   IonItemSliding,
   IonThumbnail,
-  IonSkeletonText,
-  IonButton
+  IonSkeletonText
   // IonRippleEffect,
 } from "@ionic/vue";
 export default {
@@ -63,37 +60,29 @@ export default {
     IonItemOptions,
     IonItemSliding,
     IonThumbnail,
-    IonSkeletonText,
-    IonButton
+    IonSkeletonText
     // IonRippleEffect,
   },
   data() {
     return {
       loading: false,
       alarms: [
-        { id: 1, name: "test 1", enabled: false },
-        { id: 2, name: "test 2", enabled: true },
-        { id: 3, name: "test 3", enabled: true },
-        { id: 4, name: "test 4", enabled: true },
-        { id: 5, name: "test 5", enabled: true },
-        { id: 6, name: "test 6", enabled: true },
-        { id: 7, name: "test 7", enabled: true },
-        { id: 8, name: "test 8", enabled: true },
-        { id: 9, name: "test 9", enabled: true },
+        { id: 1, name: "censor 1", enabled: false },
+        { id: 2, name: "censor 2", enabled: true },
+        { id: 3, name: "censor 3", enabled: true },
+        { id: 4, name: "censor 4", enabled: true },
+        { id: 5, name: "censor 5", enabled: true },
+        { id: 6, name: "censor 6", enabled: true },
+        { id: 7, name: "censor 7", enabled: true },
+        { id: 8, name: "censor 8", enabled: true },
+        { id: 9, name: "censor 9", enabled: true },
       ],
     };
   },
   methods: {
     showCensors(data) {
-      this.$router.push("censors");
       console.log(data);
     },
-    disableAlarm(data) {
-      console.log(data);
-    },
-    enableAlarm(data) {
-      console.log(data);
-    }
   },
 };
 </script>

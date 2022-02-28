@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import Login from "../views/Login.vue";
 import Alarms from "../views/Alarms.vue";
+import Censors from "../views/Censors.vue";
 
 const routes = [
   {
@@ -16,6 +17,11 @@ const routes = [
     path: "/alarms",
     name: "alarms",
     component: Alarms
+  },
+  {
+    path: "/censors",
+    name: "censors",
+    component: Censors
   }
 ];
 
