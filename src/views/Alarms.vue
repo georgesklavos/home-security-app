@@ -1,34 +1,71 @@
 <template>
   <ion-page>
-    <ion-content>
-
+    <ion-header translucent>
+      <ion-toolbar>
+        <ion-title>Alarms</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content fullscreen>
+      <ion-refresher slot="fixed" @ionRefresh="refresh()">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
       <ion-list v-if="loading">
         <ion-item v-for="index in 20" :key="index">
-        <ion-thumbnail>
-          <ion-skeleton-text animated class="thumbnail"></ion-skeleton-text>
-        </ion-thumbnail>
-        <ion-label>
-          <p>
-            <ion-skeleton-text animated style="width: 80%">
-
-            </ion-skeleton-text>
-          </p>
-        </ion-label>
+          <!-- <ion-thumbnail>
+            <ion-skeleton-text animated class="thumbnail"></ion-skeleton-text>
+          </ion-thumbnail> -->
+             <ion-note slot="start"
+              ><div
+               style="margin-bottom: 10px;"
+              >
+               <ion-skeleton-text animated class="dot"></ion-skeleton-text>
+            </div>
+            </ion-note
+            >
+          <ion-label>
+            <p>
+              <ion-skeleton-text animated style="width: 80%">
+              </ion-skeleton-text>
+            </p>
+          </ion-label>
         </ion-item>
       </ion-list>
 
       <ion-list v-else>
         <ion-item-sliding v-for="(alarm, index) in alarms" :key="index">
-          <ion-item>
-            <!-- <ion-label>{{ alarm.name }}</ion-label> -->
-            <ion-button @click="showCensors(alarm)" style="width: 100%; height: 100%" expand="full" fill="clear" class="full-width">{{alarm.name}}</ion-button>
+          <ion-item button @click="showCensors(alarm)">
+            <ion-label>{{ alarm.name }}</ion-label>
+            <ion-note slot="start" :color="alarm.enabled ? 'success' : 'danger'"
+              ><div
+                class="dot"
+                :style="
+                  alarm.enabled
+                    ? 'background-color:#2dd36f'
+                    : 'background-color:#eb445a'
+                "
+              ></div>
+              {{ alarm.enabled ? "On" : "Off" }}</ion-note
+            >
+            <!-- <ion-button
+              
+              style="width: 100%; height: 100%"
+              expand="full"
+              fill="clear"
+              class="full-width"
+              >{{ alarm.name }}</ion-button
+            > -->
           </ion-item>
           <ion-item-options side="end">
-            <ion-item-option v-if="alarm.enabled" color="danger" @click="disableAlarm(alarm)"
-              >Disable</ion-item-option>
-              <ion-item-option v-else color="success" @click="enableAlarm(alarm)"
-              >Enable</ion-item-option>
-              <!-- ADD ALERT  -->
+            <ion-item-option
+              v-if="alarm.enabled"
+              color="danger"
+              @click="disableAlarm(alarm)"
+              >Disable</ion-item-option
+            >
+            <ion-item-option v-else color="success" @click="enableAlarm(alarm)"
+              >Enable</ion-item-option
+            >
+            <!-- ADD ALERT  -->
           </ion-item-options>
         </ion-item-sliding>
       </ion-list>
@@ -46,9 +83,15 @@ import {
   IonItemOption,
   IonItemOptions,
   IonItemSliding,
-  IonThumbnail,
+  // IonThumbnail,
   IonSkeletonText,
-  IonButton
+  // IonButton,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonRefresher,
+  IonRefresherContent,
+  IonNote,
   // IonRippleEffect,
 } from "@ionic/vue";
 export default {
@@ -62,9 +105,15 @@ export default {
     IonItemOption,
     IonItemOptions,
     IonItemSliding,
-    IonThumbnail,
+    // IonThumbnail,
     IonSkeletonText,
-    IonButton
+    // IonButton,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonRefresher,
+    IonRefresherContent,
+    IonNote,
     // IonRippleEffect,
   },
   data() {
@@ -84,6 +133,9 @@ export default {
     };
   },
   methods: {
+    refresh() {
+      console.log("run refresh");
+    },
     showCensors(data) {
       this.$router.push("censors");
       console.log(data);
@@ -93,16 +145,24 @@ export default {
     },
     enableAlarm(data) {
       console.log(data);
-    }
+    },
   },
 };
 </script>
 
 <style scoped>
-  .thumbnail {
-     height: 40px;
-  width: 40px;
+.thumbnail {
+  height: 30px;
+  width: 30px;
   border-radius: 50%;
   display: inline-block;
-  }
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
 </style>
