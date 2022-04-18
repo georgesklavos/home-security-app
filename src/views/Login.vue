@@ -17,12 +17,14 @@
             <small class="error-msg">{{ error.$message }}</small>
           </div> -->
         </ion-item>
+          <small v-if="(v$.email.$invalid && submitted) || v$.email.$pending.$response" class="p-error">{{v$.email.required.$message.replace('Value', 'Email')}}</small>
+
 
         <ion-item>
           <ion-label position="floating">Password</ion-label>
-          <ion-input type="password"></ion-input>
+          <ion-input type="password" v-model="v$.password.$model"></ion-input>
         </ion-item>
-          <!-- <small v-if="(v$.password.$invalid && submitted) || v$.password.$pending.$response" class="p-error">{{v$.password.required.$message.replace('Value', 'Password')}}</small> -->
+          <small v-if="(v$.password.$invalid && submitted) || v$.password.$pending.$response" class="p-error">{{v$.password.required.$message.replace('Value', 'Password')}}</small>
         <ion-button style="margin-top: 5%" expand="block" @click="login"
           >Login</ion-button
         >
@@ -37,7 +39,7 @@ import { IonCard, IonInput, IonLabel, IonItem, IonButton, IonPage, IonCardConten
 import { defineComponent } from "vue";
 import useValidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
-import {mapGetters} from "vuex";
+// import {mapGetters} from "vuex";
 // import { useRouter } from "vue-router";
 
 
@@ -72,15 +74,14 @@ export default defineComponent({
       password: { required },
     };
   },
-  computed: {
-    ...mapGetters(["count"])
-  },
   methods: {
     async login() {
-      console.log(this.count);
-      // const isFormCorrect = await this.v$.$validate();
       this.submitted = true;
-      this.router.navigate("/alarms","forward","replace");
+      const isFormCorrect = await this.v$.$validate();
+      if(isFormCorrect) {
+        await this.$store.dispatch("login",{email: this.email, password: this.password});
+        this.router.navigate("/alarms","forward","replace");
+      }
       // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
       // if (!isFormCorrect) return
       console.log("click login");

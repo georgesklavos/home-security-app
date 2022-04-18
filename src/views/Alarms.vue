@@ -6,7 +6,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content fullscreen>
-      <ion-refresher slot="fixed" @ionRefresh="refresh()">
+      <ion-refresher slot="fixed" @ionRefresh="refresh($event)">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
       <ion-list v-if="loading">
@@ -14,14 +14,11 @@
           <!-- <ion-thumbnail>
             <ion-skeleton-text animated class="thumbnail"></ion-skeleton-text>
           </ion-thumbnail> -->
-             <ion-note slot="start"
-              ><div
-               style="margin-bottom: 10px;"
-              >
-               <ion-skeleton-text animated class="dot"></ion-skeleton-text>
+          <ion-note slot="start"
+            ><div style="margin-bottom: 10px">
+              <ion-skeleton-text animated class="dot"></ion-skeleton-text>
             </div>
-            </ion-note
-            >
+          </ion-note>
           <ion-label>
             <p>
               <ion-skeleton-text animated style="width: 80%">
@@ -94,6 +91,7 @@ import {
   IonNote,
   // IonRippleEffect,
 } from "@ionic/vue";
+import { mapGetters } from "vuex";
 export default {
   name: "alarmsPage",
   components: {
@@ -119,25 +117,21 @@ export default {
   data() {
     return {
       loading: false,
-      alarms: [
-        { id: 1, name: "test 1", enabled: false },
-        { id: 2, name: "test 2", enabled: true },
-        { id: 3, name: "test 3", enabled: true },
-        { id: 4, name: "test 4", enabled: true },
-        { id: 5, name: "test 5", enabled: true },
-        { id: 6, name: "test 6", enabled: true },
-        { id: 7, name: "test 7", enabled: true },
-        { id: 8, name: "test 8", enabled: true },
-        { id: 9, name: "test 9", enabled: true },
-      ],
     };
   },
+  mounted() {
+    this.getAlarms();
+  },
+  computed: {
+    ...mapGetters(["alarms"]),
+  },
   methods: {
-    refresh() {
-      console.log("run refresh");
+    async refresh(event) {
+      await this.getAlarms();
+      event.target.complete();
     },
     showCensors(data) {
-      this.$router.push("censors");
+      this.$router.push({ path: `/censors/${data._id}` });
       console.log(data);
     },
     disableAlarm(data) {
@@ -145,6 +139,11 @@ export default {
     },
     enableAlarm(data) {
       console.log(data);
+    },
+    getAlarms() {
+      this.loading = true;
+      this.$store.dispatch("alarms");
+      this.loading = false;
     },
   },
 };

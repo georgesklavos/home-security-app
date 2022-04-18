@@ -1,24 +1,80 @@
-import Vuex from "vuex";
+import axios from "axios";
+import { createStore } from "vuex";
+import Cookies from "js-cookie";
+import {app} from "../main";
 
-const store = new Vuex.Store({
-    state: {
-      count: 0
+const instance = axios.create({
+  baseURL: process.env.VUE_APP_BACK_URL,
+  headers: { Authorization: `Bearer ${Cookies.get("token")}` },
+});
+
+// instance.interceptors.response.use(function (res) {
+//   console.log(res);
+//   if (res.status == 401) {
+//     console.log("fdd");
+//     window.location.replace(window.location.host + "/login");
+//   }
+//   return res;
+// });
+
+instance.interceptors.response.use((res) => res, (err) => {
+  if(err.response.status == 401) {
+    app.config.globalProperties.$router.push({name: "login"});
+  }
+});
+
+export default createStore({
+  state: {
+    pagination: "Showing {first} to {last} of {totalRecords} entries",
+    users: [],
+    alarms: [],
+    userInfo: {},
+    censors: []
+  },
+  getters: {
+    users(state) {
+      return state.users;
     },
-    getters: {
-        count(state) {
-            return state.count;
-        }
+    alarms(state) {
+      return state.alarms;
     },
-    mutations: {
-      increment (state) {
-        state.count++
-      }
+    userInfo(state) {
+      return state.userInfo;
     },
-    actions: {
-      increment (context) {
-        context.commit('increment')
-      }
+    censors(state) {
+      return state.censors;
     }
-  })
-
-export default store;
+  },
+  mutations: {
+    users(state, payload) {
+      state.users = payload;
+    },
+    alarms(state, payload) {
+      state.alarms = payload;
+    },
+    userInfo(state, payload) {
+      state.userInfo = payload;
+    },
+    censors(state, payload) {
+      state.censors = payload;
+    }
+  },
+  actions: {
+    async login(context, data) {
+      await instance.post("login", data).then((res) => {
+        // context.commit("userInfo", res.data);
+        Cookies.set("token", res.data.access_token);
+      });
+    },
+    async alarms(context) {
+      await instance.get("limited/alarms").then((res) => {
+        context.commit("alarms", res.data);
+      });
+    },
+    async censors(context,alarmId) {
+      await instance.get(`limited/sensors/${alarmId}`).then((res) => {
+        context.commit("censors", res.data);
+      });
+    },
+  },
+});

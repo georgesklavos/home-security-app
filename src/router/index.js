@@ -19,7 +19,7 @@ const routes = [
     component: Alarms
   },
   {
-    path: "/censors",
+    path: "/censors/:id",
     name: "censors",
     component: Censors
   }

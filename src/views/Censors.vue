@@ -9,7 +9,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <ion-refresher slot="fixed" @ionRefresh="refresh()">
+      <ion-refresher slot="fixed" @ionRefresh="refresh($event)">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
       <ion-list v-if="loading">
@@ -27,9 +27,9 @@
       </ion-list>
 
       <ion-list v-else>
-        <ion-item-sliding v-for="(alarm, index) in alarms" :key="index">
+        <ion-item-sliding v-for="(censor, index) in censors" :key="index">
           <ion-item>
-            <ion-label>{{ alarm.name }}</ion-label>
+            <ion-label>{{ censor.name }}</ion-label>
           </ion-item>
         </ion-item-sliding>
       </ion-list>
@@ -58,6 +58,7 @@ import {
   IonRefresherContent,
   // IonRippleEffect,
 } from "@ionic/vue";
+import { mapGetters } from "vuex";
 export default {
   name: "alarmsPage",
   components: {
@@ -83,25 +84,23 @@ export default {
   data() {
     return {
       loading: false,
-      alarms: [
-        { id: 1, name: "censor 1", enabled: false },
-        { id: 2, name: "censor 2", enabled: true },
-        { id: 3, name: "censor 3", enabled: true },
-        { id: 4, name: "censor 4", enabled: true },
-        { id: 5, name: "censor 5", enabled: true },
-        { id: 6, name: "censor 6", enabled: true },
-        { id: 7, name: "censor 7", enabled: true },
-        { id: 8, name: "censor 8", enabled: true },
-        { id: 9, name: "censor 9", enabled: true },
-      ],
     };
   },
+  mounted() {
+    this.getCenros();
+  },
+  computed: {
+    ...mapGetters(["censors"]),
+  },
   methods: {
-    refresh() {
-      console.log("run refresh");
+    async refresh(event) {
+      await this.getCenros();
+      event.target.complete();
     },
-    showCensors(data) {
-      console.log(data);
+    async getCenros() {
+      this.loading = true;
+      await this.$store.dispatch("censors", this.$route.params.id);
+      this.loading = false;
     },
   },
 };
