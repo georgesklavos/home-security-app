@@ -3,10 +3,8 @@ import { createStore } from "vuex";
 import Cookies from "js-cookie";
 import {app} from "../main";
 
-const instance = axios.create({
-  baseURL: process.env.VUE_APP_BACK_URL,
-  headers: { Authorization: `Bearer ${Cookies.get("token")}` },
-});
+axios.defaults.baseURL= process.env.VUE_APP_BACK_URL;
+axios.defaults.headers.common['Authorization'] = `Bearer ${Cookies.get('token')}`;
 
 // instance.interceptors.response.use(function (res) {
 //   console.log(res);
@@ -17,7 +15,7 @@ const instance = axios.create({
 //   return res;
 // });
 
-instance.interceptors.response.use((res) => res, (err) => {
+axios.interceptors.response.use((res) => res, (err) => {
   if(err.response.status == 401) {
     app.config.globalProperties.$router.push({name: "login"});
   }
@@ -61,18 +59,19 @@ export default createStore({
   },
   actions: {
     async login(context, data) {
-      await instance.post("login", data).then((res) => {
+      await axios.post("login", data).then((res) => {
         // context.commit("userInfo", res.data);
         Cookies.set("token", res.data.access_token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
       });
     },
     async alarms(context) {
-      await instance.get("limited/alarms").then((res) => {
+      await axios.get("limited/alarms").then((res) => {
         context.commit("alarms", res.data);
       });
     },
     async censors(context,alarmId) {
-      await instance.get(`limited/sensors/${alarmId}`).then((res) => {
+      await axios.get(`limited/sensors/${alarmId}`).then((res) => {
         context.commit("censors", res.data);
       });
     },
