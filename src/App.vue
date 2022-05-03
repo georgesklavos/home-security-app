@@ -19,6 +19,7 @@ export default defineComponent({
    
   const addListeners = async () => {
   await PushNotifications.addListener('registration', token => {
+    this.$store.commit('androidToken', token.value);
     console.info('Registration token: ', token.value);
   });
 

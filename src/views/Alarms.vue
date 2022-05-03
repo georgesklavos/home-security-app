@@ -32,16 +32,16 @@
         <ion-item-sliding v-for="(alarm, index) in alarms" :key="index">
           <ion-item button @click="showCensors(alarm)">
             <ion-label>{{ alarm.name }}</ion-label>
-            <ion-note slot="start" :color="alarm.enabled ? 'success' : 'danger'"
+            <ion-note slot="start" :color="alarm.active ? 'success' : 'danger'"
               ><div
                 class="dot"
                 :style="
-                  alarm.enabled
+                  alarm.active
                     ? 'background-color:#2dd36f'
                     : 'background-color:#eb445a'
                 "
               ></div>
-              {{ alarm.enabled ? "On" : "Off" }}</ion-note
+              {{ alarm.active ? "On" : "Off" }}</ion-note
             >
             <!-- <ion-button
               
@@ -56,10 +56,10 @@
             <ion-item-option
               v-if="alarm.enabled"
               color="danger"
-              @click="disableAlarm(alarm)"
+              @click="toggleAlarm(alarm)"
               >Disable</ion-item-option
             >
-            <ion-item-option v-else color="success" @click="enableAlarm(alarm)"
+            <ion-item-option v-else color="success" @click="toggleAlarm(alarm)"
               >Enable</ion-item-option
             >
             <!-- ADD ALERT  -->
@@ -134,11 +134,9 @@ export default {
       this.$router.push({ path: `/censors/${data._id}` });
       console.log(data);
     },
-    disableAlarm(data) {
-      console.log(data);
-    },
-    enableAlarm(data) {
-      console.log(data);
+    async toggleAlarm(data) {
+      await this.$store.dispatch("toggleAlarm", data._id);
+      this.getAlarms();
     },
     getAlarms() {
       this.loading = true;

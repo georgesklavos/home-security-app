@@ -27,7 +27,8 @@ export default createStore({
     users: [],
     alarms: [],
     userInfo: {},
-    censors: []
+    censors: [],
+    android: ""
   },
   getters: {
     users(state) {
@@ -41,6 +42,9 @@ export default createStore({
     },
     censors(state) {
       return state.censors;
+    },
+    getAndroidToken(state) {
+      return state.android;
     }
   },
   mutations: {
@@ -55,11 +59,18 @@ export default createStore({
     },
     censors(state, payload) {
       state.censors = payload;
+    },
+    androidToken(state, payload) {
+      state.android = payload;
     }
   },
   actions: {
-    async login(context, data) {
-      await axios.post("login", data).then((res) => {
+    async login(context, {email,password,androidToken}) {
+      await axios.post("login", {email, password}, {
+        headers: {
+          "AndroidToken": androidToken
+        }
+      }).then((res) => {
         // context.commit("userInfo", res.data);
         Cookies.set("token", res.data.access_token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
@@ -75,5 +86,8 @@ export default createStore({
         context.commit("censors", res.data);
       });
     },
+    async toggleAlarm(context, alarmId) {
+      await axios.put(`limited/alarms/${alarmId}`);
+    }
   },
 });

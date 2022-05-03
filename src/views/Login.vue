@@ -39,6 +39,7 @@ import { IonCard, IonInput, IonLabel, IonItem, IonButton, IonPage, IonCardConten
 import { defineComponent } from "vue";
 import useValidate from "@vuelidate/core";
 import { required, email } from "@vuelidate/validators";
+import { mapGetters } from "vuex";
 // import {mapGetters} from "vuex";
 // import { useRouter } from "vue-router";
 
@@ -74,12 +75,15 @@ export default defineComponent({
       password: { required },
     };
   },
+  computed: {
+    ...mapGetters(['getAndroidToken'])
+  },
   methods: {
     async login() {
       this.submitted = true;
       const isFormCorrect = await this.v$.$validate();
       if(isFormCorrect) {
-        await this.$store.dispatch("login",{email: this.email, password: this.password});
+        await this.$store.dispatch("login",{email: this.email, password: this.password,androidToken: this.getAndroidToken});
         this.router.navigate("/alarms","forward","replace");
       }
       // you can show some extra alert to the user or just leave the each field to show it's `$errors`.
