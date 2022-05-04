@@ -6,6 +6,9 @@
           <ion-back-button default-href="alarms"></ion-back-button>
         </ion-buttons>
         <ion-title>Censors</ion-title>
+        <ion-buttons slot="end">
+          <ion-button @click="logout"> Logout </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>
@@ -56,6 +59,7 @@ import {
   IonTitle,
   IonRefresher,
   IonRefresherContent,
+  IonButton,
   // IonRippleEffect,
 } from "@ionic/vue";
 import { mapGetters } from "vuex";
@@ -79,6 +83,7 @@ export default {
     IonTitle,
     IonRefresher,
     IonRefresherContent,
+    IonButton
     // IonRippleEffect,
   },
   data() {
@@ -102,6 +107,9 @@ export default {
       await this.$store.dispatch("censors", this.$route.params.id);
       this.loading = false;
     },
+    logout() {
+      this.$store.commit("logout");
+    }
   },
 };
 </script>

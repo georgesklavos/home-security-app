@@ -30,4 +30,22 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from, next) => {
+  if(localStorage.getItem("token") == null) {
+    console.log(to)
+    if(to.name == "alarms") {
+      next("login")
+    }else {
+      next()
+    }
+  }else {
+    console.log(to.path == "/login" && localStorage.getItem("token") != null);
+    if(to.path == "/login" && localStorage.getItem("token") != null) {
+      next("/alarms");
+    }else {
+      next();
+    }
+  }
+})
+
 export default router;

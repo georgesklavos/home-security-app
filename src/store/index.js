@@ -1,10 +1,11 @@
 import axios from "axios";
 import { createStore } from "vuex";
-import Cookies from "js-cookie";
-import {app} from "../main";
+import { app } from "../main";
 
-axios.defaults.baseURL= process.env.VUE_APP_BACK_URL;
-axios.defaults.headers.common['Authorization'] = `Bearer ${Cookies.get('token')}`;
+axios.defaults.baseURL = process.env.VUE_APP_BACK_URL;
+axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(
+  "token"
+)}`;
 
 // instance.interceptors.response.use(function (res) {
 //   console.log(res);
@@ -15,11 +16,17 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${Cookies.get('token')}
 //   return res;
 // });
 
-axios.interceptors.response.use((res) => res, (err) => {
-  if(err.response.status == 401) {
-    app.config.globalProperties.$router.push({name: "login"});
+axios.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response.status == 401) {
+      console.log(app);
+      app.config.globalProperties.$router.push({ name: "login" });
+      localStorage.removeItem("token");
+    }
+    return Promise.reject(err);
   }
-});
+);
 
 export default createStore({
   state: {
@@ -28,7 +35,7 @@ export default createStore({
     alarms: [],
     userInfo: {},
     censors: [],
-    android: ""
+    android: "",
   },
   getters: {
     users(state) {
@@ -62,18 +69,39 @@ export default createStore({
     },
     androidToken(state, payload) {
       state.android = payload;
+    },
+    logout() {
+      localStorage.removeItem("token");
+      app.config.globalProperties.$router.push({ name: "login" });
     }
   },
   actions: {
-    async login(context, {email,password,androidToken}) {
-      await axios.post("login", {email, password}, {
-        headers: {
-          "AndroidToken": androidToken
-        }
-      }).then((res) => {
-        // context.commit("userInfo", res.data);
-        Cookies.set("token", res.data.access_token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
+    async login(context, { email, password, androidToken }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(
+            "login",
+            { email, password },
+            {
+              headers: {
+                AndroidToken: androidToken,
+              },
+            }
+          )
+          .then((res) => {
+            // context.commit("userInfo", res.data);
+            console.log(res);
+            if (res) {
+              localStorage.setItem("token", res.data.access_token);
+              axios.defaults.headers.common[
+                "Authorization"
+              ] = `Bearer ${res.data.access_token}`;
+              resolve();
+            }
+          })
+          .catch((err) => {
+            reject(err);
+          });
       });
     },
     async alarms(context) {
@@ -81,13 +109,13 @@ export default createStore({
         context.commit("alarms", res.data);
       });
     },
-    async censors(context,alarmId) {
+    async censors(context, alarmId) {
       await axios.get(`limited/sensors/${alarmId}`).then((res) => {
         context.commit("censors", res.data);
       });
     },
     async toggleAlarm(context, alarmId) {
       await axios.put(`limited/alarms/${alarmId}`);
-    }
+    },
   },
 });

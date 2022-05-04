@@ -3,6 +3,9 @@
     <ion-header translucent>
       <ion-toolbar>
         <ion-title>Alarms</ion-title>
+        <ion-buttons slot="end">
+          <ion-button @click="logout"> Logout </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content fullscreen>
@@ -14,8 +17,8 @@
           <!-- <ion-thumbnail>
             <ion-skeleton-text animated class="thumbnail"></ion-skeleton-text>
           </ion-thumbnail> -->
-          <ion-note slot="start"
-            ><div style="margin-bottom: 10px">
+          <ion-note slot="start">
+            <div style="margin-bottom: 10px">
               <ion-skeleton-text animated class="dot"></ion-skeleton-text>
             </div>
           </ion-note>
@@ -32,17 +35,14 @@
         <ion-item-sliding v-for="(alarm, index) in alarms" :key="index">
           <ion-item button @click="showCensors(alarm)">
             <ion-label>{{ alarm.name }}</ion-label>
-            <ion-note slot="start" :color="alarm.active ? 'success' : 'danger'"
-              ><div
-                class="dot"
-                :style="
-                  alarm.active
-                    ? 'background-color:#2dd36f'
-                    : 'background-color:#eb445a'
-                "
-              ></div>
-              {{ alarm.active ? "On" : "Off" }}</ion-note
-            >
+            <ion-note slot="start" :color="alarm.active ? 'success' : 'danger'">
+              <div class="dot" :style="
+                alarm.active
+                  ? 'background-color:#2dd36f'
+                  : 'background-color:#eb445a'
+              "></div>
+              {{ alarm.active ? "On" : "Off" }}
+            </ion-note>
             <!-- <ion-button
               
               style="width: 100%; height: 100%"
@@ -53,15 +53,8 @@
             > -->
           </ion-item>
           <ion-item-options side="end">
-            <ion-item-option
-              v-if="alarm.enabled"
-              color="danger"
-              @click="toggleAlarm(alarm)"
-              >Disable</ion-item-option
-            >
-            <ion-item-option v-else color="success" @click="toggleAlarm(alarm)"
-              >Enable</ion-item-option
-            >
+            <ion-item-option v-if="alarm.active" color="danger" @click="toggleAlarm(alarm)">Disable</ion-item-option>
+            <ion-item-option v-else color="success" @click="toggleAlarm(alarm)">Enable</ion-item-option>
             <!-- ADD ALERT  -->
           </ion-item-options>
         </ion-item-sliding>
@@ -82,13 +75,14 @@ import {
   IonItemSliding,
   // IonThumbnail,
   IonSkeletonText,
-  // IonButton,
+  IonButton,
   IonHeader,
   IonToolbar,
   IonTitle,
   IonRefresher,
   IonRefresherContent,
   IonNote,
+  IonButtons
   // IonRippleEffect,
 } from "@ionic/vue";
 import { mapGetters } from "vuex";
@@ -105,13 +99,14 @@ export default {
     IonItemSliding,
     // IonThumbnail,
     IonSkeletonText,
-    // IonButton,
+    IonButton,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonRefresher,
     IonRefresherContent,
     IonNote,
+    IonButtons
     // IonRippleEffect,
   },
   data() {
@@ -119,7 +114,7 @@ export default {
       loading: false,
     };
   },
-  mounted() {
+  created() {
     this.getAlarms();
   },
   computed: {
@@ -138,11 +133,14 @@ export default {
       await this.$store.dispatch("toggleAlarm", data._id);
       this.getAlarms();
     },
-    getAlarms() {
+    async getAlarms() {
       this.loading = true;
-      this.$store.dispatch("alarms");
+      await this.$store.dispatch("alarms");
       this.loading = false;
     },
+    logout() {
+      this.$store.commit("logout");
+    }
   },
 };
 </script>
