@@ -18,31 +18,21 @@
             <small class="error-msg">{{ error.$message }}</small>
           </div> -->
           </ion-item>
-          <small
-            v-if="
-              (v$.email.$invalid && submitted) || v$.email.$pending.$response
-            "
-            class="p-error"
-            >{{ v$.email.required.$message.replace("Value", "Email") }}</small
-          >
+          <small v-if="
+            (v$.email.$invalid && submitted) || v$.email.$pending.$response
+          " class="p-error">{{ v$.email.required.$message.replace("Value", "Email") }}</small>
 
           <ion-item>
             <ion-label position="floating">Password</ion-label>
             <ion-input type="password" v-model="v$.password.$model"></ion-input>
           </ion-item>
-          <small
-            v-if="
-              (v$.password.$invalid && submitted) ||
-              v$.password.$pending.$response
-            "
-            class="p-error"
-            >{{
-              v$.password.required.$message.replace("Value", "Password")
-            }}</small
-          >
-          <ion-button style="margin-top: 5%" expand="block" @click="login"
-            >Login</ion-button
-          >
+          <small v-if="
+            (v$.password.$invalid && submitted) ||
+            v$.password.$pending.$response
+          " class="p-error">{{
+            v$.password.required.$message.replace("Value", "Password")
+            }}</small>
+          <ion-button style="margin-top: 5%" expand="block" @click="login">Login</ion-button>
         </ion-card-content>
       </ion-card>
     </ion-content>
@@ -63,7 +53,7 @@ import {
   IonContent,
   useIonRouter,
   toastController,
-  IonProgressBar 
+  IonProgressBar
 } from "@ionic/vue";
 import { defineComponent } from "vue";
 import useValidate from "@vuelidate/core";
@@ -106,7 +96,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapGetters(["getAndroidToken"]),
+    ...mapGetters(["getAndroidToken", "profile"]),
   },
   methods: {
     async login() {
@@ -120,8 +110,13 @@ export default defineComponent({
             password: this.password,
             androidToken: this.getAndroidToken,
           });
+          await this.$store.dispatch("profile");
           this.showLoading = false;
-          this.router.navigate("/alarms", "forward", "replace");
+          if (this.profile.loggedIn) {
+            this.router.navigate("/alarms", "forward", "replace");
+          } else {
+            this.router.navigate("/changePassword", "forward", "replace");
+          }
         } catch (err) {
           if (err.response.status == 401) {
             const toast = await toastController.create({

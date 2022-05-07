@@ -33,7 +33,7 @@
 
       <ion-list v-else>
         <ion-item-sliding v-for="(alarm, index) in alarms" :key="index">
-          <ion-item button @click="showCensors(alarm)">
+          <ion-item button @click="showSensors(alarm)">
             <ion-label>{{ alarm.name }}</ion-label>
             <ion-note slot="start" :color="alarm.active ? 'success' : 'danger'">
               <div class="dot" :style="
@@ -114,7 +114,8 @@ export default {
       loading: false,
     };
   },
-  created() {
+  async created() {
+    await this.$store.dispatch("profile");
     this.getAlarms();
   },
   computed: {
@@ -125,8 +126,8 @@ export default {
       await this.getAlarms();
       event.target.complete();
     },
-    showCensors(data) {
-      this.$router.push({ path: `/censors/${data._id}` });
+    showSensors(data) {
+      this.$router.push({ path: `/sensors/${data._id}` });
       console.log(data);
     },
     async toggleAlarm(data) {

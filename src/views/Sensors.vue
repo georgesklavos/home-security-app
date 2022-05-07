@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-back-button default-href="alarms"></ion-back-button>
         </ion-buttons>
-        <ion-title>Censors</ion-title>
+        <ion-title>Sensors</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="logout"> Logout </ion-button>
         </ion-buttons>
@@ -30,9 +30,9 @@
       </ion-list>
 
       <ion-list v-else>
-        <ion-item-sliding v-for="(censor, index) in censors" :key="index">
+        <ion-item-sliding v-for="(sensor, index) in sensors" :key="index">
           <ion-item>
-            <ion-label>{{ censor.name }}</ion-label>
+            <ion-label>{{ sensor.name }}</ion-label>
           </ion-item>
         </ion-item-sliding>
       </ion-list>
@@ -95,7 +95,7 @@ export default {
     this.getCenros();
   },
   computed: {
-    ...mapGetters(["censors"]),
+    ...mapGetters(["sensors"]),
   },
   methods: {
     async refresh(event) {
@@ -104,7 +104,7 @@ export default {
     },
     async getCenros() {
       this.loading = true;
-      await this.$store.dispatch("censors", this.$route.params.id);
+      await this.$store.dispatch("sensors", this.$route.params.id);
       this.loading = false;
     },
     logout() {

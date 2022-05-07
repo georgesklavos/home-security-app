@@ -28,7 +28,7 @@ export default defineComponent({
 
       await PushNotifications.addListener(
         "pushNotificationReceived",
-       async (notification) => {
+        async (notification) => {
           console.log("Push notification received: ", notification);
           const toast = await toastController.create({
             color: "dark",

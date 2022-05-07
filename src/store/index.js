@@ -34,8 +34,9 @@ export default createStore({
     users: [],
     alarms: [],
     userInfo: {},
-    censors: [],
+    sensors: [],
     android: "",
+    profile: {},
   },
   getters: {
     users(state) {
@@ -47,12 +48,15 @@ export default createStore({
     userInfo(state) {
       return state.userInfo;
     },
-    censors(state) {
-      return state.censors;
+    sensors(state) {
+      return state.sensors;
     },
     getAndroidToken(state) {
       return state.android;
-    }
+    },
+    profile(state) {
+      return state.profile;
+    },
   },
   mutations: {
     users(state, payload) {
@@ -64,8 +68,8 @@ export default createStore({
     userInfo(state, payload) {
       state.userInfo = payload;
     },
-    censors(state, payload) {
-      state.censors = payload;
+    sensors(state, payload) {
+      state.sensors = payload;
     },
     androidToken(state, payload) {
       state.android = payload;
@@ -73,7 +77,10 @@ export default createStore({
     logout() {
       localStorage.removeItem("token");
       app.config.globalProperties.$router.push({ name: "login" });
-    }
+    },
+    profile(state, payload) {
+      state.profile = payload;
+    },
   },
   actions: {
     async login(context, { email, password, androidToken }) {
@@ -109,13 +116,21 @@ export default createStore({
         context.commit("alarms", res.data);
       });
     },
-    async censors(context, alarmId) {
+    async sensors(context, alarmId) {
       await axios.get(`limited/sensors/${alarmId}`).then((res) => {
-        context.commit("censors", res.data);
+        context.commit("sensors", res.data);
       });
     },
     async toggleAlarm(context, alarmId) {
       await axios.put(`limited/alarms/${alarmId}`);
     },
+    async profile(context) {
+      await axios.get("limited/users/profile").then((res) => {
+        context.commit("profile", res.data);
+      });
+    },
+    async changePassword(context, data) {
+      await axios.put('limited/users/password',data);
+    }
   },
 });
