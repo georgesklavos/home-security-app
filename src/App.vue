@@ -39,6 +39,10 @@ export default defineComponent({
             position: "top",
           });
           await toast.present();
+
+          if(notification.title == "Update alarm") {
+            await this.$store.dispatch("alarms");
+          }
         }
       );
 
